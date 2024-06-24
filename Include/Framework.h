@@ -1,11 +1,17 @@
+//DECLARE ONLY ONCE
 #pragma once
 
+//DEFINING FRAMEWORK
 class Framework
 {
+	//DEFINING ALL PUBLIC VARIABLES
 public:
+	//DEFINING INITILIZING
 	int Init();
+	//DEFINING UPDATE
 	int Update();
+	//DEFINING TERMINATION
 	int Terminate();
+	//DEFINING ALL PRIVATE VARIABLES
 private:
-	
 };
