@@ -1,10 +1,14 @@
 //INCLUDE EXTERNAL REFERENCES
-#include "../Include/Framework.h"
+#include "../Header/Framework.h"
 #include <stdio.h>
+#include <iostream>
+
+using namespace std;
 
 //INITILIZING FRAMEWORK
 int Framework::Init()
 {
+	m_Window.Init();
 	//RETURN VALID
 	return 1;
 }
@@ -12,14 +16,22 @@ int Framework::Init()
 //UPDATE FRAMEWORK EVERY FRAME
 int Framework::Update()
 {
-	printf("Hello World");
+	m_Window.Update();
+	printf("Press F to close");
+	char input;
+	std::cin >> input;
+	if (input == 'f')
+	{
+		return 1;
+	}
 	//RETURN VALID
-	return 1;
+	return 0;
 }
 
 //TERMINATE FRAMEWORK
 int Framework::Terminate()
 {
+	m_Window.Terminate();
 	//RETURN VALID
 	return 1;
 }

@@ -1,5 +1,5 @@
 //INCLUDE EXTERNAL REFERENCES
-#include "../Include/Main.h"
+#include "../Header/Main.h"
 #include <cassert>
 
 //ENTRANCE POINT OF THE CODE
