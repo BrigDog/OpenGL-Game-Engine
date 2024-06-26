@@ -1,2 +1,7 @@
-﻿  Window.cpp
+﻿  Framework.cpp
+  Main.cpp
+C:\Users\Joshu\source\repos\OpenGL_Game_Engine\OpenGL_Game_Engine\Source\Main.cpp(9,2): warning C4805: '==': unsafe mix of type 'int' and type 'bool' in operation
+C:\Users\Joshu\source\repos\OpenGL_Game_Engine\OpenGL_Game_Engine\Source\Main.cpp(21,2): warning C4805: '==': unsafe mix of type 'int' and type 'bool' in operation
+  Window.cpp
+  Generating Code...
   OpenGL_Game_Engine.vcxproj -> C:\Users\Joshu\source\repos\OpenGL_Game_Engine\Debug\OpenGL_Game_Engine.exe

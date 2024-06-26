@@ -17,13 +17,7 @@ int Framework::Init()
 int Framework::Update()
 {
 	m_Window.Update();
-	printf("Press F to close");
-	char input;
-	std::cin >> input;
-	if (input == 'f')
-	{
-		return 1;
-	}
+	printf("WOAH  ");
 	//RETURN VALID
 	return 0;
 }
