@@ -1,3 +1,2 @@
-﻿  Framework.cpp
-LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
+﻿  Window.cpp
   OpenGL_Game_Engine.vcxproj -> C:\Users\Joshu\source\repos\OpenGL_Game_Engine\Debug\OpenGL_Game_Engine.exe

@@ -1,5 +1,6 @@
 #include "../Header/Window.h"
 #include <cstddef>
+#include <cassert>
 
 int Window::Init()
 {
@@ -18,6 +19,10 @@ int Window::Init()
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
 
+    if (glewInit() != GLEW_OK)
+    {
+        assert(false && "ERROR WITH GLEW IMPLEMENTATION");
+    }
 
     return 0;
 }
