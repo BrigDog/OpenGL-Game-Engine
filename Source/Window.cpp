@@ -6,9 +6,14 @@
 #include <fstream>
 #include <sstream>
 
+#define CHECK(x) if(!(x)) __debugbreak();
+#define CHECKFUNCTION(x) GLClearError();\
+    x;\
+    CHECK(GLLogCall(#x, __FILE__, __LINE__));
+
 enum ShaderType
 {
-    NONE = -1, VERTEX = 0, PIXEL = 1,
+    NONE = 0, VERTEX = 0, PIXEL = 1,
 };
 
 struct ShaderProgramSource
@@ -17,26 +22,49 @@ struct ShaderProgramSource
     ShaderType Type;
 };
 
+static void GLClearError()
+{
+    while (glGetError() != GL_NO_ERROR);
+}
+
+static void GLCheckError()
+{
+    while (GLenum error = glGetError())
+    {
+        std::cout << "[OpenGL Error] (" << error << ")" << std::endl;
+    }
+}
+
+static bool GLLogCall(const char* function, const char* file, int line)
+{
+    while (GLenum error = glGetError())
+    {
+        std::cout << "[OpenGL Error] (" << error << ") FROM " << function << " ON LINE " << line << " WITHIN " << file << std::endl;
+        return false;
+    }
+    return true;
+}
+
 static unsigned int CompileShader(unsigned int type, const std::string& source)
 {
     unsigned int id = glCreateShader(type);
     const char* src = source.c_str();
-    glShaderSource(id, 1, &src, nullptr);
-    glCompileShader(id);
+    CHECKFUNCTION(glShaderSource(id, 1, &src, nullptr));
+    CHECKFUNCTION(glCompileShader(id));
 
     int result;
-    glGetShaderiv(id, GL_COMPILE_STATUS, &result);
+    CHECKFUNCTION(glGetShaderiv(id, GL_COMPILE_STATUS, &result));
     if (result == GL_FALSE)
     {
         int length;
-        glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
+        CHECKFUNCTION(glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length));
         char* message = (char*)alloca(length * sizeof(char));
-        glGetShaderInfoLog(id, length, &length, message);
+        CHECKFUNCTION(glGetShaderInfoLog(id, length, &length, message));
         std::cout << "Failed to compile " <<
             (type == GL_VERTEX_SHADER ? "vertex" : "pixel")
             << " shader!" << std::endl;
         std::cout << message << std::endl;
-        glDeleteShader(id);
+        CHECKFUNCTION(glDeleteShader(id));
         return 0;
     }
 
@@ -49,14 +77,14 @@ static unsigned int CreateShader(const std::string& vertexShader, const std::str
     unsigned int vs = CompileShader(GL_VERTEX_SHADER, vertexShader);
     unsigned int ps = CompileShader(GL_FRAGMENT_SHADER, pixelShader);
 
-    glAttachShader(program, vs);
-    glAttachShader(program, ps);
+    CHECKFUNCTION(glAttachShader(program, vs));
+    CHECKFUNCTION(glAttachShader(program, ps));
 
-    glLinkProgram(program);
-    glValidateProgram(program);
+    CHECKFUNCTION(glLinkProgram(program));
+    CHECKFUNCTION(glValidateProgram(program));
 
-    glDeleteShader(vs);
-    glDeleteShader(ps);
+    CHECKFUNCTION(glDeleteShader(vs));
+    CHECKFUNCTION(glDeleteShader(ps));
 
     return program;
 }
@@ -120,20 +148,22 @@ int Window::Init()
     }
 
     unsigned int buffer;
-    glGenBuffers(1, &buffer);
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), positions, GL_STATIC_DRAW);
+    CHECKFUNCTION(glGenBuffers(1, &buffer));
+    CHECKFUNCTION(glBindBuffer(GL_ARRAY_BUFFER, buffer));
+    CHECKFUNCTION(glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), positions, GL_STATIC_DRAW));
 
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
+    CHECKFUNCTION(glEnableVertexAttribArray(0));
+    CHECKFUNCTION(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0));
 
     unsigned int ibo;
-    glGenBuffers(1, &ibo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indicies, GL_STATIC_DRAW);
+    CHECKFUNCTION(glGenBuffers(1, &ibo));
+    CHECKFUNCTION(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
+    CHECKFUNCTION(glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indicies, GL_STATIC_DRAW));
 
     ShaderProgramSource VertexShader = ParseShader("Resources/Shaders/BasicVertexShader.shader");
+    std::cout << "Vertex Shader Code:" << std::endl << std::endl << VertexShader.ShaderCode << std::endl << std::endl << std::endl << std::endl << std::endl;
     ShaderProgramSource PixelShader = ParseShader("Resources/Shaders/BasicPixelShader.shader");
+    std::cout << "Pixel Shader Code:" << std::endl << std::endl << PixelShader.ShaderCode << std::endl << std::endl;
 
     shader = CreateShader(VertexShader.ShaderCode, PixelShader.ShaderCode);
     glUseProgram(shader);
@@ -145,8 +175,7 @@ int Window::Update()
     /* Render here */
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
-
+    CHECKFUNCTION(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
 
     /* Swap front and back buffers */
     glfwSwapBuffers(window);

@@ -17,7 +17,6 @@ int Framework::Init()
 int Framework::Update()
 {
 	m_Window.Update();
-	printf("WOAH  ");
 	//RETURN VALID
 	return 0;
 }
