@@ -24,6 +24,7 @@
     <ClCompile Include="Source\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Header\Constants.h" />
     <ClInclude Include="Header\Framework.h" />
     <ClInclude Include="Header\Main.h" />
     <ClInclude Include="Header\Window.h" />

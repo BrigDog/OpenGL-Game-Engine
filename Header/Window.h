@@ -1,6 +1,28 @@
 #pragma once
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include "Constants.h"
+#include <string>
+#include <cstddef>
+#include <cassert>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+
+#define CHECKFUNCTION(x)	GLClearError();\
+							x;\
+							CHECK(GLLogCall(#x, __FILE__, __LINE__));
+
+enum ShaderType
+{
+	NONE = -1, VERTEX = 0, PIXEL = 1,
+};
+
+struct ShaderProgramSource
+{
+	std::string ShaderCode;
+	ShaderType Type;
+};
 
 class Window
 {
@@ -21,4 +43,6 @@ private:
 		2, 3, 0
 	};
 	unsigned int shader;
+	int location;
+	float inc = 0;
 };

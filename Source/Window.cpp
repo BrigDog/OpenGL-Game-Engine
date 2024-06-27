@@ -1,26 +1,4 @@
 #include "../Header/Window.h"
-#include <cstddef>
-#include <cassert>
-#include <string>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-
-#define CHECK(x) if(!(x)) __debugbreak();
-#define CHECKFUNCTION(x) GLClearError();\
-    x;\
-    CHECK(GLLogCall(#x, __FILE__, __LINE__));
-
-enum ShaderType
-{
-    NONE = 0, VERTEX = 0, PIXEL = 1,
-};
-
-struct ShaderProgramSource
-{
-    std::string ShaderCode;
-    ShaderType Type;
-};
 
 static void GLClearError()
 {
@@ -132,10 +110,10 @@ int Window::Init()
         return -1;
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(640, 480, "Disco Box", NULL, NULL);
     if (!window)
     {
-        glfwTerminate();
+        CHECKFUNCTION(glfwTerminate());
         return -1;
     }
 
@@ -146,6 +124,8 @@ int Window::Init()
     {
         assert(false && "ERROR WITH GLEW IMPLEMENTATION");
     }
+
+    std::cout << glGetString(GL_VERSION) << std::endl << std::endl << std::endl << std::endl;
 
     unsigned int buffer;
     CHECKFUNCTION(glGenBuffers(1, &buffer));
@@ -161,35 +141,45 @@ int Window::Init()
     CHECKFUNCTION(glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indicies, GL_STATIC_DRAW));
 
     ShaderProgramSource VertexShader = ParseShader("Resources/Shaders/BasicVertexShader.shader");
-    std::cout << "Vertex Shader Code:" << std::endl << std::endl << VertexShader.ShaderCode << std::endl << std::endl << std::endl << std::endl << std::endl;
+    std::cout << "Vertex Shader Code:" << std::endl << std::endl << VertexShader.ShaderCode << std::endl << std::endl << std::endl;
     ShaderProgramSource PixelShader = ParseShader("Resources/Shaders/BasicPixelShader.shader");
     std::cout << "Pixel Shader Code:" << std::endl << std::endl << PixelShader.ShaderCode << std::endl << std::endl;
 
     shader = CreateShader(VertexShader.ShaderCode, PixelShader.ShaderCode);
-    glUseProgram(shader);
+    CHECKFUNCTION(glUseProgram(shader));
+
+    location = glGetUniformLocation(shader, "InputColor");
+    CHECK(location != 1);
+    CHECKFUNCTION(glUniform4f(location, inc, 0.3f, (inc * -1) + 1, 1.0f));
     return 0;
 }
 
 int Window::Update()
 {
+    inc += 0.001;
+    CHECKFUNCTION(glUniform4f(location, inc, 0.3f, (inc * -1)+1, 1.0f));
+    if (inc > 1)
+    {
+        inc = 0;
+    }
     /* Render here */
-    glClear(GL_COLOR_BUFFER_BIT);
+    CHECKFUNCTION(glClear(GL_COLOR_BUFFER_BIT));
 
     CHECKFUNCTION(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
 
     /* Swap front and back buffers */
-    glfwSwapBuffers(window);
+    CHECKFUNCTION(glfwSwapBuffers(window));
 
     /* Poll for and process events */
-    glfwPollEvents();
+    CHECKFUNCTION(glfwPollEvents());
 
     return 0;
 }
 
 int Window::Terminate()
 {
-    glDeleteProgram(shader);
-    glfwTerminate();
+    CHECKFUNCTION(glDeleteProgram(shader));
+    CHECKFUNCTION(glfwTerminate());
     
     return 0;
 }
