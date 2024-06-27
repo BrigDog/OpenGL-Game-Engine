@@ -28,6 +28,10 @@
     <ClInclude Include="Header\Main.h" />
     <ClInclude Include="Header\Window.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Shaders\BasicPixelShader.shader" />
+    <None Include="Resources\Shaders\BasicVertexShader.shader" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

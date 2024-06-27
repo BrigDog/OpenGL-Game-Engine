@@ -3,6 +3,19 @@
 #include <cassert>
 #include <string>
 #include <iostream>
+#include <fstream>
+#include <sstream>
+
+enum ShaderType
+{
+    NONE = -1, VERTEX = 0, PIXEL = 1,
+};
+
+struct ShaderProgramSource
+{
+    std::string ShaderCode;
+    ShaderType Type;
+};
 
 static unsigned int CompileShader(unsigned int type, const std::string& source)
 {
@@ -48,6 +61,42 @@ static unsigned int CreateShader(const std::string& vertexShader, const std::str
     return program;
 }
 
+static ShaderProgramSource ParseShader(const std::string& FilePath)
+{
+    std::ifstream stream(FilePath);
+    std::string line;
+    std::stringstream ss[2];
+    ShaderType type = NONE;
+
+    while (getline(stream, line))
+    {
+        if (line.find("#Shader") != std::string::npos)
+        {
+            if (line.find("Vertex") != std::string::npos)
+            {
+                type = VERTEX;
+            }
+            else if (line.find("Pixel") != std::string::npos)
+            {
+                type = PIXEL;
+            }
+            else
+            {
+                type = NONE;
+                assert(false, "ERROR IDENTIFYING SHADER RESOURCE");
+            }
+        }
+        else
+        {
+            ss[(int)type] << line << '\n';
+        }
+    }
+    ShaderProgramSource Result;
+    Result.ShaderCode = ss[(int)type].str();
+    Result.Type = type;
+    return Result;
+}
+
 int Window::Init()
 {
     /* Initialize the library */
@@ -78,25 +127,10 @@ int Window::Init()
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
 
-    std::string vertexShader =
-        "#version 330 core\n"
-        "\n"
-        "layout(location = 0) in vec4 position;\n"
-        "\n"
-        "void main()\n"
-        "{\n"
-        "   gl_Position = position.xy\n"
-        "}\n";
-    std::string pixelShader =
-        "#version 330 core\n"
-        "\n"
-        "layout(location = 0) out vec4 color;\n"
-        "\n"
-        "void main()\n"
-        "{\n"
-        "   color = vec4(1.0,0.0,0.0,1.0);\n"
-        "}\n";
-    unsigned int shader = CreateShader(vertexShader, pixelShader);
+    ShaderProgramSource VertexShader = ParseShader("Resources/Shaders/BasicVertexShader.shader");
+    ShaderProgramSource PixelShader = ParseShader("Resources/Shaders/BasicPixelShader.shader");
+
+    shader = CreateShader(VertexShader.ShaderCode, PixelShader.ShaderCode);
     glUseProgram(shader);
     return 0;
 }
@@ -120,6 +154,8 @@ int Window::Update()
 
 int Window::Terminate()
 {
+    glDeleteProgram(shader);
     glfwTerminate();
+    
     return 0;
 }
