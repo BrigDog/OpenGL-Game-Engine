@@ -48,6 +48,9 @@ private:
 		0, 1, 2, 
 		2, 3, 0
 	};
+	unsigned int vao;
+	unsigned int ibo;
+	unsigned int buffer;
 	unsigned int shader;
 	ShaderSettings ShaderSetting;
 };

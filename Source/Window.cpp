@@ -117,6 +117,10 @@ int Window::Init()
         return -1;
     }
 
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
 
@@ -127,7 +131,9 @@ int Window::Init()
 
     std::cout << glGetString(GL_VERSION) << std::endl << std::endl << std::endl << std::endl;
 
-    unsigned int buffer;
+    CHECKFUNCTION(glGenVertexArrays(1, &vao));
+    CHECKFUNCTION(glBindVertexArray(vao));
+
     CHECKFUNCTION(glGenBuffers(1, &buffer));
     CHECKFUNCTION(glBindBuffer(GL_ARRAY_BUFFER, buffer));
     CHECKFUNCTION(glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), positions, GL_STATIC_DRAW));
@@ -135,7 +141,6 @@ int Window::Init()
     CHECKFUNCTION(glEnableVertexAttribArray(0));
     CHECKFUNCTION(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0));
 
-    unsigned int ibo;
     CHECKFUNCTION(glGenBuffers(1, &ibo));
     CHECKFUNCTION(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
     CHECKFUNCTION(glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indicies, GL_STATIC_DRAW));
@@ -151,19 +156,35 @@ int Window::Init()
     ShaderSetting.location = glGetUniformLocation(shader, "InputColor");
     CHECK(ShaderSetting.location != 1);
     CHECKFUNCTION(glUniform4f(ShaderSetting.location, ShaderSetting.inc, 0.3f, (ShaderSetting.inc * -1) + 1, 1.0f));
+
+    CHECKFUNCTION(glBindVertexArray(0));
+    CHECKFUNCTION(glUseProgram(0));
+    CHECKFUNCTION(glBindBuffer(GL_ARRAY_BUFFER, 0));
+    CHECKFUNCTION(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+
     return 0;
 }
 
 int Window::Update()
 {
+
+
     ShaderSetting.inc += 0.001;
-    CHECKFUNCTION(glUniform4f(ShaderSetting.location, ShaderSetting.inc, 0.3f, (ShaderSetting.inc * -1)+1, 1.0f));
-    if (inc > 1)
+    if (ShaderSetting.inc > 1)
     {
-        inc = 0;
+        ShaderSetting.inc = 0;
     }
+
+
+
     /* Render here */
     CHECKFUNCTION(glClear(GL_COLOR_BUFFER_BIT));
+
+    CHECKFUNCTION(glUseProgram(shader));
+    CHECKFUNCTION(glUniform4f(ShaderSetting.location, ShaderSetting.inc, 0.3f, (ShaderSetting.inc * -1) + 1, 1.0f));
+
+    CHECKFUNCTION(glBindVertexArray(vao));
+    CHECKFUNCTION(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
 
     CHECKFUNCTION(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
 

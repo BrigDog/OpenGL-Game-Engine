@@ -1,4 +1,4 @@
 ﻿  Window.cpp
 C:\Users\Joshu\source\repos\OpenGL_Game_Engine\OpenGL_Game_Engine\Source\Window.cpp(92,17): warning C4002: too many arguments for function-like macro invocation 'assert'
-C:\Users\Joshu\source\repos\OpenGL_Game_Engine\OpenGL_Game_Engine\Source\Window.cpp(159,17): warning C4305: '+=': truncation from 'double' to 'float'
+C:\Users\Joshu\source\repos\OpenGL_Game_Engine\OpenGL_Game_Engine\Source\Window.cpp(172,31): warning C4305: '+=': truncation from 'double' to 'float'
   OpenGL_Game_Engine.vcxproj -> C:\Users\Joshu\source\repos\OpenGL_Game_Engine\Debug\OpenGL_Game_Engine.exe
