@@ -147,17 +147,17 @@ int Window::Init()
 
     shader = CreateShader(VertexShader.ShaderCode, PixelShader.ShaderCode);
     CHECKFUNCTION(glUseProgram(shader));
-
-    location = glGetUniformLocation(shader, "InputColor");
-    CHECK(location != 1);
-    CHECKFUNCTION(glUniform4f(location, inc, 0.3f, (inc * -1) + 1, 1.0f));
+ 
+    ShaderSetting.location = glGetUniformLocation(shader, "InputColor");
+    CHECK(ShaderSetting.location != 1);
+    CHECKFUNCTION(glUniform4f(ShaderSetting.location, ShaderSetting.inc, 0.3f, (ShaderSetting.inc * -1) + 1, 1.0f));
     return 0;
 }
 
 int Window::Update()
 {
-    inc += 0.001;
-    CHECKFUNCTION(glUniform4f(location, inc, 0.3f, (inc * -1)+1, 1.0f));
+    ShaderSetting.inc += 0.001;
+    CHECKFUNCTION(glUniform4f(ShaderSetting.location, ShaderSetting.inc, 0.3f, (ShaderSetting.inc * -1)+1, 1.0f));
     if (inc > 1)
     {
         inc = 0;

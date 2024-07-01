@@ -24,6 +24,12 @@ struct ShaderProgramSource
 	ShaderType Type;
 };
 
+struct ShaderSettings
+{
+	int location;
+	float inc = 0;
+};
+
 class Window
 {
 public:
@@ -43,6 +49,5 @@ private:
 		2, 3, 0
 	};
 	unsigned int shader;
-	int location;
-	float inc = 0;
+	ShaderSettings ShaderSetting;
 };
