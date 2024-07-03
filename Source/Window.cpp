@@ -1,28 +1,5 @@
 #include "../Header/Window.h"
 
-static void GLClearError()
-{
-    while (glGetError() != GL_NO_ERROR);
-}
-
-static void GLCheckError()
-{
-    while (GLenum error = glGetError())
-    {
-        std::cout << "[OpenGL Error] (" << error << ")" << std::endl;
-    }
-}
-
-static bool GLLogCall(const char* function, const char* file, int line)
-{
-    while (GLenum error = glGetError())
-    {
-        std::cout << "[OpenGL Error] (" << error << ") FROM " << function << " ON LINE " << line << " WITHIN " << file << std::endl;
-        return false;
-    }
-    return true;
-}
-
 static unsigned int CompileShader(unsigned int type, const std::string& source)
 {
     unsigned int id = glCreateShader(type);
@@ -101,47 +78,6 @@ static ShaderProgramSource ParseShader(const std::string& FilePath)
     Result.ShaderCode = ss[(int)type].str();
     Result.Type = type;
     return Result;
-}
-
-VertexBuffer::~VertexBuffer()
-{
-    CHECKFUNCTION(glDeleteBuffers(1, &RenderID));
-}
-void VertexBuffer::Settup(const void* data, unsigned int size)
-{
-    CHECKFUNCTION(glGenBuffers(1, &RenderID));
-    CHECKFUNCTION(glBindBuffer(GL_ARRAY_BUFFER, RenderID));
-    CHECKFUNCTION(glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW));
-}
-void VertexBuffer::Bind() const
-{
-    CHECKFUNCTION(glBindBuffer(GL_ARRAY_BUFFER, RenderID));
-}
-void VertexBuffer::Unbind() const
-{
-    CHECKFUNCTION(glBindBuffer(GL_ARRAY_BUFFER, 0));
-}
-
-IndexBuffer::~IndexBuffer()
-{
-    CHECKFUNCTION(glDeleteBuffers(1, &RenderID));
-}
-void IndexBuffer::Settup(const unsigned int* data, unsigned int count)
-{
-    CHECK(sizeof(unsigned int) == sizeof(GLuint));
-    M_Count = count;
-
-    CHECKFUNCTION(glGenBuffers(1, &RenderID));
-    CHECKFUNCTION(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, RenderID));
-    CHECKFUNCTION(glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(unsigned int), data, GL_STATIC_DRAW));
-}
-void IndexBuffer::Bind() const
-{
-    CHECKFUNCTION(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, RenderID));
-}
-void IndexBuffer::Unbind() const
-{
-    CHECKFUNCTION(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 }
 
 int Window::Init()
