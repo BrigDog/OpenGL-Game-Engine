@@ -13,6 +13,10 @@
 							x;\
 							CHECK(GLLogCall(#x, __FILE__, __LINE__));
 
+void GLClearError();
+void GLCheckError();
+bool GLLogCall(const char* function, const char* file, int line);
+
 enum ShaderType
 {
 	NONE = -1, VERTEX = 0, PIXEL = 1,
@@ -28,6 +32,31 @@ struct ShaderSettings
 {
 	int location;
 	float inc = 0;
+};
+
+class VertexBuffer
+{
+public:
+	~VertexBuffer();
+	void Settup(const void* data, unsigned int count);
+	void Bind() const;
+	void Unbind() const;
+private:
+	unsigned int RenderID;
+};
+
+class IndexBuffer
+{
+public:
+	~IndexBuffer();
+	void Settup(const unsigned int* data, unsigned int count);
+	void Bind() const;
+	void Unbind() const;
+
+	inline unsigned int GetCount() const { return M_Count; }
+private:
+	unsigned int RenderID;
+	unsigned int M_Count;
 };
 
 class Window
@@ -53,4 +82,8 @@ private:
 	unsigned int buffer;
 	unsigned int shader;
 	ShaderSettings ShaderSetting;
+
+
+	VertexBuffer vb;
+	IndexBuffer ib;
 };

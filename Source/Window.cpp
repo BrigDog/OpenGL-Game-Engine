@@ -103,6 +103,47 @@ static ShaderProgramSource ParseShader(const std::string& FilePath)
     return Result;
 }
 
+VertexBuffer::~VertexBuffer()
+{
+    CHECKFUNCTION(glDeleteBuffers(1, &RenderID));
+}
+void VertexBuffer::Settup(const void* data, unsigned int size)
+{
+    CHECKFUNCTION(glGenBuffers(1, &RenderID));
+    CHECKFUNCTION(glBindBuffer(GL_ARRAY_BUFFER, RenderID));
+    CHECKFUNCTION(glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW));
+}
+void VertexBuffer::Bind() const
+{
+    CHECKFUNCTION(glBindBuffer(GL_ARRAY_BUFFER, RenderID));
+}
+void VertexBuffer::Unbind() const
+{
+    CHECKFUNCTION(glBindBuffer(GL_ARRAY_BUFFER, 0));
+}
+
+IndexBuffer::~IndexBuffer()
+{
+    CHECKFUNCTION(glDeleteBuffers(1, &RenderID));
+}
+void IndexBuffer::Settup(const unsigned int* data, unsigned int count)
+{
+    CHECK(sizeof(unsigned int) == sizeof(GLuint));
+    M_Count = count;
+
+    CHECKFUNCTION(glGenBuffers(1, &RenderID));
+    CHECKFUNCTION(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, RenderID));
+    CHECKFUNCTION(glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(unsigned int), data, GL_STATIC_DRAW));
+}
+void IndexBuffer::Bind() const
+{
+    CHECKFUNCTION(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, RenderID));
+}
+void IndexBuffer::Unbind() const
+{
+    CHECKFUNCTION(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+}
+
 int Window::Init()
 {
     /* Initialize the library */
@@ -134,16 +175,12 @@ int Window::Init()
     CHECKFUNCTION(glGenVertexArrays(1, &vao));
     CHECKFUNCTION(glBindVertexArray(vao));
 
-    CHECKFUNCTION(glGenBuffers(1, &buffer));
-    CHECKFUNCTION(glBindBuffer(GL_ARRAY_BUFFER, buffer));
-    CHECKFUNCTION(glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), positions, GL_STATIC_DRAW));
+    vb.Settup(positions, 8 * sizeof(float));
 
     CHECKFUNCTION(glEnableVertexAttribArray(0));
     CHECKFUNCTION(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0));
 
-    CHECKFUNCTION(glGenBuffers(1, &ibo));
-    CHECKFUNCTION(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
-    CHECKFUNCTION(glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indicies, GL_STATIC_DRAW));
+    ib.Settup(indicies, 6);
 
     ShaderProgramSource VertexShader = ParseShader("Resources/Shaders/BasicVertexShader.shader");
     std::cout << "Vertex Shader Code:" << std::endl << std::endl << VertexShader.ShaderCode << std::endl << std::endl << std::endl;
@@ -169,7 +206,7 @@ int Window::Update()
 {
 
 
-    ShaderSetting.inc += 0.001;
+    ShaderSetting.inc += 0.001f;
     if (ShaderSetting.inc > 1)
     {
         ShaderSetting.inc = 0;
@@ -184,7 +221,7 @@ int Window::Update()
     CHECKFUNCTION(glUniform4f(ShaderSetting.location, ShaderSetting.inc, 0.3f, (ShaderSetting.inc * -1) + 1, 1.0f));
 
     CHECKFUNCTION(glBindVertexArray(vao));
-    CHECKFUNCTION(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
+    ib.Bind();
 
     CHECKFUNCTION(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
 
