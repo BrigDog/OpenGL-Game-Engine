@@ -7,8 +7,8 @@
 #include <fstream>
 #include <sstream>
 
-#include "VertexBuffer.h"
 #include "IndexBuffer.h"
+#include "VertexArray.h"
 
 enum ShaderType
 {
@@ -53,4 +53,7 @@ private:
 
 	VertexBuffer vb;
 	IndexBuffer ib;
+	VertexArray va;
+	VertexBuffer vba;
+	VertexBufferLayout layout;
 };

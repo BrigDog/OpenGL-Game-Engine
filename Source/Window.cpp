@@ -66,7 +66,7 @@ static ShaderProgramSource ParseShader(const std::string& FilePath)
             else
             {
                 type = NONE;
-                assert(false, "ERROR IDENTIFYING SHADER RESOURCE");
+                //assert(false, "ERROR IDENTIFYING SHADER RESOURCE");
             }
         }
         else
@@ -111,10 +111,13 @@ int Window::Init()
     CHECKFUNCTION(glGenVertexArrays(1, &vao));
     CHECKFUNCTION(glBindVertexArray(vao));
 
+    va.SettupVertexArray();
+
     vb.Settup(positions, 8 * sizeof(float));
 
-    CHECKFUNCTION(glEnableVertexAttribArray(0));
-    CHECKFUNCTION(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0));
+    layout.Push<float>(2);
+
+    va.AddBuffer(vb, layout);
 
     ib.Settup(indicies, 6);
 
@@ -156,7 +159,7 @@ int Window::Update()
     CHECKFUNCTION(glUseProgram(shader));
     CHECKFUNCTION(glUniform4f(ShaderSetting.location, ShaderSetting.inc, 0.3f, (ShaderSetting.inc * -1) + 1, 1.0f));
 
-    CHECKFUNCTION(glBindVertexArray(vao));
+    va.Bind();
     ib.Bind();
 
     CHECKFUNCTION(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));

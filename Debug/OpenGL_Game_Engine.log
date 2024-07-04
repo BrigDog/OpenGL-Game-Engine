@@ -1,6 +1,8 @@
 ﻿  Framework.cpp
   Main.cpp
   Window.cpp
-C:\Users\Joshu\source\repos\OpenGL_Game_Engine\OpenGL_Game_Engine\Source\Window.cpp(69,17): warning C4002: too many arguments for function-like macro invocation 'assert'
   Generating Code...
+LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
+LINK : warning LNK4098: defaultlib 'LIBCMT' conflicts with use of other libs; use /NODEFAULTLIB:library
+glew32s.lib(glew.obj) : warning LNK4099: PDB '' was not found with 'glew32s.lib(glew.obj)' or at ''; linking object as if no debug info
   OpenGL_Game_Engine.vcxproj -> C:\Users\Joshu\source\repos\OpenGL_Game_Engine\Debug\OpenGL_Game_Engine.exe

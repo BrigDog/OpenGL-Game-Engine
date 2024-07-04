@@ -22,6 +22,7 @@
     <ClCompile Include="Source\Framework.cpp" />
     <ClCompile Include="Source\IndexBuffer.cpp" />
     <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="Source\VertexArray.cpp" />
     <ClCompile Include="Source\VertexBuffer.cpp" />
     <ClCompile Include="Source\Window.cpp" />
   </ItemGroup>
@@ -30,7 +31,9 @@
     <ClInclude Include="Header\Framework.h" />
     <ClInclude Include="Header\IndexBuffer.h" />
     <ClInclude Include="Header\Main.h" />
+    <ClInclude Include="Header\VertexArray.h" />
     <ClInclude Include="Header\VertexBuffer.h" />
+    <ClInclude Include="Header\VertexBufferLayout.h" />
     <ClInclude Include="Header\Window.h" />
   </ItemGroup>
   <ItemGroup>
