@@ -1,85 +1,5 @@
 #include "../Header/Window.h"
 
-static unsigned int CompileShader(unsigned int type, const std::string& source)
-{
-    unsigned int id = glCreateShader(type);
-    const char* src = source.c_str();
-    CHECKFUNCTION(glShaderSource(id, 1, &src, nullptr));
-    CHECKFUNCTION(glCompileShader(id));
-
-    int result;
-    CHECKFUNCTION(glGetShaderiv(id, GL_COMPILE_STATUS, &result));
-    if (result == GL_FALSE)
-    {
-        int length;
-        CHECKFUNCTION(glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length));
-        char* message = (char*)alloca(length * sizeof(char));
-        CHECKFUNCTION(glGetShaderInfoLog(id, length, &length, message));
-        std::cout << "Failed to compile " <<
-            (type == GL_VERTEX_SHADER ? "vertex" : "pixel")
-            << " shader!" << std::endl;
-        std::cout << message << std::endl;
-        CHECKFUNCTION(glDeleteShader(id));
-        return 0;
-    }
-
-    return id;
-}
-
-static unsigned int CreateShader(const std::string& vertexShader, const std::string& pixelShader)
-{
-    unsigned int program = glCreateProgram();
-    unsigned int vs = CompileShader(GL_VERTEX_SHADER, vertexShader);
-    unsigned int ps = CompileShader(GL_FRAGMENT_SHADER, pixelShader);
-
-    CHECKFUNCTION(glAttachShader(program, vs));
-    CHECKFUNCTION(glAttachShader(program, ps));
-
-    CHECKFUNCTION(glLinkProgram(program));
-    CHECKFUNCTION(glValidateProgram(program));
-
-    CHECKFUNCTION(glDeleteShader(vs));
-    CHECKFUNCTION(glDeleteShader(ps));
-
-    return program;
-}
-
-static ShaderProgramSource ParseShader(const std::string& FilePath)
-{
-    std::ifstream stream(FilePath);
-    std::string line;
-    std::stringstream ss[2];
-    ShaderType type = NONE;
-
-    while (getline(stream, line))
-    {
-        if (line.find("#Shader") != std::string::npos)
-        {
-            if (line.find("Vertex") != std::string::npos)
-            {
-                type = VERTEX;
-            }
-            else if (line.find("Pixel") != std::string::npos)
-            {
-                type = PIXEL;
-            }
-            else
-            {
-                type = NONE;
-                //assert(false, "ERROR IDENTIFYING SHADER RESOURCE");
-            }
-        }
-        else
-        {
-            ss[(int)type] << line << '\n';
-        }
-    }
-    ShaderProgramSource Result;
-    Result.ShaderCode = ss[(int)type].str();
-    Result.Type = type;
-    return Result;
-}
-
 int Window::Init()
 {
     /* Initialize the library */
@@ -121,22 +41,15 @@ int Window::Init()
 
     ib.Settup(indicies, 6);
 
-    ShaderProgramSource VertexShader = ParseShader("Resources/Shaders/BasicVertexShader.shader");
-    std::cout << "Vertex Shader Code:" << std::endl << std::endl << VertexShader.ShaderCode << std::endl << std::endl << std::endl;
-    ShaderProgramSource PixelShader = ParseShader("Resources/Shaders/BasicPixelShader.shader");
-    std::cout << "Pixel Shader Code:" << std::endl << std::endl << PixelShader.ShaderCode << std::endl << std::endl;
+    m_Shader.SettupShader("Resources/Shaders/BasicVertexShader.shader", "Resources/Shaders/BasicPixelShader.shader");
+    m_Shader.Bind();
 
-    shader = CreateShader(VertexShader.ShaderCode, PixelShader.ShaderCode);
-    CHECKFUNCTION(glUseProgram(shader));
- 
-    ShaderSetting.location = glGetUniformLocation(shader, "InputColor");
-    CHECK(ShaderSetting.location != 1);
-    CHECKFUNCTION(glUniform4f(ShaderSetting.location, ShaderSetting.inc, 0.3f, (ShaderSetting.inc * -1) + 1, 1.0f));
+    m_Shader.SetUniform4f("InputColor", ShaderSetting.inc, 0.3f, (ShaderSetting.inc * -1) + 1, 1.0f);
 
-    CHECKFUNCTION(glBindVertexArray(0));
-    CHECKFUNCTION(glUseProgram(0));
-    CHECKFUNCTION(glBindBuffer(GL_ARRAY_BUFFER, 0));
-    CHECKFUNCTION(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+    va.Unbind();
+    m_Shader.Unbind();
+    vb.Unbind();
+    ib.Unbind();
 
     return 0;
 }
@@ -156,8 +69,8 @@ int Window::Update()
     /* Render here */
     CHECKFUNCTION(glClear(GL_COLOR_BUFFER_BIT));
 
-    CHECKFUNCTION(glUseProgram(shader));
-    CHECKFUNCTION(glUniform4f(ShaderSetting.location, ShaderSetting.inc, 0.3f, (ShaderSetting.inc * -1) + 1, 1.0f));
+    m_Shader.Bind();
+    m_Shader.SetUniform4f("InputColor", ShaderSetting.inc, 0.3f, (ShaderSetting.inc * -1) + 1, 1.0f);
 
     va.Bind();
     ib.Bind();

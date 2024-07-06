@@ -1,5 +1,6 @@
 //DECLARE ONLY ONCE
 #pragma once
+
 #include "Window.h"
 
 //DEFINING FRAMEWORK

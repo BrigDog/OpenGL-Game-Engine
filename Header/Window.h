@@ -1,31 +1,14 @@
 #pragma once
 
-#include "Constants.h"
-#include <string>
 #include <cstddef>
 #include <cassert>
 #include <fstream>
 #include <sstream>
 
+#include "Constants.h"
 #include "IndexBuffer.h"
 #include "VertexArray.h"
-
-enum ShaderType
-{
-	NONE = -1, VERTEX = 0, PIXEL = 1,
-};
-
-struct ShaderProgramSource
-{
-	std::string ShaderCode;
-	ShaderType Type;
-};
-
-struct ShaderSettings
-{
-	int location;
-	float inc = 0;
-};
+#include "Shader.h"
 
 class Window
 {
@@ -56,4 +39,5 @@ private:
 	VertexArray va;
 	VertexBuffer vba;
 	VertexBufferLayout layout;
+	Shader m_Shader;
 };
