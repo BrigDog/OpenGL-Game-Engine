@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Constants.h"
+#include <unordered_map>
 
 enum ShaderType
 {
@@ -40,4 +41,5 @@ private:
 	std::string m_VertexFilePath;
 	std::string m_PixelFilePath;
 	unsigned int m_Renderer_ID;
+	std::unordered_map<std::string, int> m_UniformLocationCache;
 };
